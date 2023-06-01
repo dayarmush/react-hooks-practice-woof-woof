@@ -1,23 +1,33 @@
 import { useState } from "react"
 
-function DogInfo({ displayDog, dogs, setDisplayDog, setDogs }) {
+function DogInfo({ displayDog, setDisplayDog, isGood, setIsGood, dogs}) {
 
-  const [isGood, setIsGood] = useState(displayDog.isGoodDog)
-
+  let dogValue;
+  
   function handleGoodDog(e) {
     const id = parseInt(e.target.id)
-    const targetDog = dogs.find(dog => dog.id === id)
+    dogValue = dogs.find(dog => dog.id === id)
+
+    if (dogValue.isGoodDog) {
+      dogValue.isGoodDog = !dogValue.isGoodDog
+    } else {
+      dogValue.isGoodDog = !dogValue.isGoodDog
+    }
+    
+    console.log(dogValue.isGoodDog)
+
+    setIsGood(dogValue.isGoodDog)
     
     fetch(`http://localhost:3001/pups/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type' : 'application/json'
       },
-      body: JSON.stringify({'isGoodDog': !targetDog.isGoodDog})
+      body: JSON.stringify({'isGoodDog': dogValue.isGoodDog})
     })
     .then(r => r.json())
-    .then(setIsGood(pre => !pre), setDisplayDog(preDog => {
-      return {...preDog, 'isGoodDog': isGood}
+    .then(setDisplayDog(preDog => {
+      return {...preDog, 'isGoodDog': dogValue.isGoodDog}
     }))
   }
 
